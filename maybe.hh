@@ -10,7 +10,7 @@ template<typename T>
 struct maybe {
   maybe() : is_init(false) {}
 
-  maybe(const T &other) {
+  maybe(const T &other) : is_init(false) {
     new (&memory) T(other);
     is_init = true;
   }
