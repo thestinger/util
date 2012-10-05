@@ -15,6 +15,11 @@ struct maybe {
     is_init = true;
   }
 
+  maybe(const maybe &other) : is_init(false) {
+    new (&memory) T(*reinterpret_cast<const T *>(&other.memory));
+    is_init = other.is_init;
+  }
+
   maybe(maybe &&other) {
     is_init = other.is_init;
     memcpy(reinterpret_cast<char *>(&memory),
