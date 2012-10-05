@@ -26,6 +26,21 @@ struct maybe {
     other.is_init = false;
   }
 
+  maybe &operator=(const maybe &other) {
+    if (this != &other && other.is_init) {
+      if (is_init) {
+        *reinterpret_cast<T *>(&memory) = *reinterpret_cast<const T *>(&other.memory);
+      } else {
+        is_init = false;
+        new (&memory) T(*reinterpret_cast<const T *>(&other.memory));
+        is_init = true;
+      }
+    } else {
+      is_init = false;
+    }
+    return *this;
+  }
+
   ~maybe() {
     if (is_init) {
       this->operator*().~T();
