@@ -20,8 +20,7 @@ struct maybe {
     is_init = other.is_init;
   }
 
-  maybe(maybe &&other) {
-    is_init = other.is_init;
+  maybe(maybe &&other) noexcept : is_init(other.is_init) {
     memcpy(reinterpret_cast<char *>(&memory),
            reinterpret_cast<char *>(&other.memory), sizeof(T));
     other.is_init = false;
