@@ -41,6 +41,24 @@ struct maybe {
     return *this;
   }
 
+  maybe &operator=(maybe &&other) {
+    assert(this != &other);
+    if (other.is_init) {
+      other.is_init = false;
+      if (is_init) {
+        *reinterpret_cast<T *>(&memory) =
+          std::move(*reinterpret_cast<const T *>(&other.memory));
+      } else {
+        is_init = false;
+        new (&memory) T(std::move(*reinterpret_cast<const T *>(&other.memory)));
+        is_init = true;
+      }
+    } else {
+      is_init = false;
+    }
+    return *this;
+  }
+
   ~maybe() {
     if (is_init) {
       this->operator*().~T();
