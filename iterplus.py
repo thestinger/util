@@ -29,6 +29,12 @@ def elem_index(value, iterable):
 def transpose(iterable):
     return zip(*iterable)
 
+def drop(n, iterable):
+    return islice(iterable, n, None)
+
+def intersperse(delimiter, iterable):
+    return drop(1, chain.from_iterable(zip(repeat(delimiter), iterable)))
+
 # from the Python documentation {{{
 
 def take(n, iterable):
