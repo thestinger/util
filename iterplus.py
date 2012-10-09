@@ -35,6 +35,9 @@ def drop(n, iterable):
 def intersperse(delimiter, iterable):
     return drop(1, chain.from_iterable(zip(repeat(delimiter), iterable)))
 
+def intercalate(delimiter, iterable):
+    return chain.from_iterable(intersperse(delimiter, iterable))
+
 # from the Python documentation {{{
 
 def take(n, iterable):
