@@ -15,6 +15,11 @@ struct maybe {
     is_init = true;
   }
 
+  maybe(T &&other) : is_init(false) {
+    new (&memory) T(std::move(other));
+    is_init = true;
+  }
+
   maybe(const maybe &other) : is_init(false) {
     new (&memory) T(*other.as_ptr());
     is_init = other.is_init;
