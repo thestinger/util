@@ -27,7 +27,7 @@ struct maybe {
     }
   }
 
-  maybe(maybe &&other) noexcept : is_init(false) {
+  maybe(maybe &&other) : is_init(false) {
     if (other.is_init) {
       new (&memory) T(std::move(*other.as_ptr()));
       other.is_init = false;
