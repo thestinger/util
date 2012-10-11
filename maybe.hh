@@ -60,7 +60,7 @@ struct maybe {
 
   ~maybe() {
     if (is_init) {
-      this->operator*().~T();
+      as_ptr()->~T();
     }
   }
 
