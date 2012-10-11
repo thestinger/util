@@ -2,7 +2,6 @@
 #define MAYBE_HH
 
 #include <cassert>
-#include <cstring>
 #include <new>
 #include <memory>
 
