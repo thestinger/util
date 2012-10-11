@@ -16,7 +16,7 @@ struct maybe {
   }
 
   maybe(const maybe &other) : is_init(false) {
-    new (&memory) T(*reinterpret_cast<const T *>(&other.memory));
+    new (&memory) T(*other.as_ptr());
     is_init = other.is_init;
   }
 
@@ -29,10 +29,10 @@ struct maybe {
   maybe &operator=(const maybe &other) {
     if (this != &other && other.is_init) {
       if (is_init) {
-        *reinterpret_cast<T *>(&memory) = *reinterpret_cast<const T *>(&other.memory);
+        *as_ptr() = *other.as_ptr();
       } else {
         is_init = false;
-        new (&memory) T(*reinterpret_cast<const T *>(&other.memory));
+        new (&memory) T(*other.as_ptr());
         is_init = true;
       }
     } else {
@@ -46,11 +46,10 @@ struct maybe {
     if (other.is_init) {
       other.is_init = false;
       if (is_init) {
-        *reinterpret_cast<T *>(&memory) =
-          std::move(*reinterpret_cast<const T *>(&other.memory));
+        *as_ptr() = std::move(*other.as_ptr());
       } else {
         is_init = false;
-        new (&memory) T(std::move(*reinterpret_cast<const T *>(&other.memory)));
+        new (&memory) T(std::move(*other.as_ptr()));
         is_init = true;
       }
     } else {
@@ -71,37 +70,40 @@ struct maybe {
 
   T &operator*() {
     assert(is_init);
-    return *reinterpret_cast<T *>(&memory);
+    return *as_ptr();
   }
 
   const T &operator*() const {
     assert(is_init);
-    return *reinterpret_cast<const T *>(&memory);
+    return *as_ptr();
   }
 
   T *operator->() {
     assert(is_init);
-    return reinterpret_cast<T *>(&memory);
+    return as_ptr();
   }
 
   const T *operator->() const {
     assert(is_init);
-    return reinterpret_cast<const T *>(&memory);
+    return as_ptr();
   }
 
   T *get() {
-    return is_init ? reinterpret_cast<T *>(&memory) : nullptr;
+    return is_init ? as_ptr() : nullptr;
   }
 
   const T *get() const {
-    return is_init ? reinterpret_cast<const T *>(&memory) : nullptr;
+    return is_init ? as_ptr() : nullptr;
   }
 
   T const &get_value_or(T const &v) const {
-    return is_init ? *reinterpret_cast<const T *>(&memory) : v;
+    return is_init ? *as_ptr() : v;
   }
 
 private:
+  T *as_ptr() { return reinterpret_cast<T *>(&memory); }
+  const T *as_ptr() const { return reinterpret_cast<const T *>(&memory); }
+
   typename std::aligned_storage<sizeof(T), std::alignment_of<T>::value>::type memory;
   bool is_init;
 };
