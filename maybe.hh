@@ -21,8 +21,10 @@ struct maybe {
   }
 
   maybe(const maybe &other) : is_init(false) {
-    new (&memory) T(*other.as_ptr());
-    is_init = other.is_init;
+    if (other.is_init) {
+      new (&memory) T(*other.as_ptr());
+      is_init = other.is_init;
+    }
   }
 
   maybe(maybe &&other) noexcept : is_init(false) {
