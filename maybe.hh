@@ -76,7 +76,7 @@ struct maybe {
 
   const T &operator*() const {
     assert(is_init);
-    return *reinterpret_cast<T *>(&memory);
+    return *reinterpret_cast<const T *>(&memory);
   }
 
   T *operator->() {
@@ -86,7 +86,7 @@ struct maybe {
 
   const T *operator->() const {
     assert(is_init);
-    return reinterpret_cast<T *>(&memory);
+    return reinterpret_cast<const T *>(&memory);
   }
 
   T *get() {
@@ -94,7 +94,7 @@ struct maybe {
   }
 
   const T *get() const {
-    return is_init ? reinterpret_cast<T *>(&memory) : nullptr;
+    return is_init ? reinterpret_cast<const T *>(&memory) : nullptr;
   }
 
   T const &get_value_or(T const &v) const {
