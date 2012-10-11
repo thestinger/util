@@ -25,10 +25,12 @@ struct maybe {
     is_init = other.is_init;
   }
 
-  maybe(maybe &&other) noexcept : is_init(other.is_init) {
-    memcpy(reinterpret_cast<char *>(&memory),
-           reinterpret_cast<char *>(&other.memory), sizeof(T));
-    other.is_init = false;
+  maybe(maybe &&other) noexcept : is_init(false) {
+    if (other.is_init) {
+      new (&memory) T(std::move(*other.as_ptr()));
+      other.is_init = false;
+      is_init = true;
+    }
   }
 
   maybe &operator=(const maybe &other) {
