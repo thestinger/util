@@ -97,6 +97,10 @@ struct maybe {
     return is_init ? reinterpret_cast<T *>(&memory) : nullptr;
   }
 
+  T const &get_value_or(T const &v) const {
+    return is_init ? *reinterpret_cast<const T *>(&memory) : v;
+  }
+
 private:
   typename std::aligned_storage<sizeof(T), std::alignment_of<T>::value>::type memory;
   bool is_init;
