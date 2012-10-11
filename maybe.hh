@@ -34,7 +34,8 @@ struct maybe {
         new (&memory) T(*other.as_ptr());
         is_init = true;
       }
-    } else {
+    } else if (is_init) {
+      as_ptr()->~T();
       is_init = false;
     }
     return *this;
@@ -50,7 +51,8 @@ struct maybe {
         new (&memory) T(std::move(*other.as_ptr()));
         is_init = true;
       }
-    } else {
+    } else if (is_init) {
+      as_ptr()->~T();
       is_init = false;
     }
     return *this;
