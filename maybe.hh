@@ -42,9 +42,8 @@ struct maybe {
         new (&memory) T(*other.as_ptr());
         is_init = true;
       }
-    } else if (is_init) {
-      as_ptr()->~T();
-      is_init = false;
+    } else {
+      clear();
     }
     return *this;
   }
@@ -59,9 +58,8 @@ struct maybe {
         new (&memory) T(std::move(*other.as_ptr()));
         is_init = true;
       }
-    } else if (is_init) {
-      as_ptr()->~T();
-      is_init = false;
+    } else {
+      clear();
     }
     return *this;
   }
@@ -106,6 +104,13 @@ struct maybe {
 
   T const &get_value_or(T const &v) const {
     return is_init ? *as_ptr() : v;
+  }
+
+  void clear() {
+    if (is_init) {
+      as_ptr()->~T();
+      is_init = false;
+    }
   }
 
 private:
