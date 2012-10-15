@@ -8,19 +8,19 @@
 
 template<typename T>
 struct maybe {
-  maybe() : is_init(false) {}
+  maybe() noexcept : is_init(false) {}
 
-  maybe(const T &other) : is_init(false) {
+  maybe(const T &other) noexcept(std::is_nothrow_copy_constructible<T>::value) : is_init(false) {
     new (&memory) T(other);
     is_init = true;
   }
 
-  maybe(T &&other) : is_init(false) {
+  maybe(T &&other) noexcept(std::is_nothrow_move_constructible<T>::value) : is_init(false) {
     new (&memory) T(std::move(other));
     is_init = true;
   }
 
-  maybe(const maybe &other) : is_init(false) {
+  maybe(const maybe &other) noexcept(std::is_nothrow_copy_constructible<T>::value) : is_init(false) {
     if (other.is_init) {
       new (&memory) T(*other.as_ptr());
       is_init = other.is_init;
@@ -71,39 +71,39 @@ struct maybe {
     }
   }
 
-  explicit operator bool() const {
+  explicit operator bool() const noexcept {
     return is_init;
   }
 
-  T &operator*() {
+  T &operator*() noexcept {
     assert(is_init);
     return *as_ptr();
   }
 
-  const T &operator*() const {
+  const T &operator*() const noexcept {
     assert(is_init);
     return *as_ptr();
   }
 
-  T *operator->() {
+  T *operator->() noexcept {
     assert(is_init);
     return as_ptr();
   }
 
-  const T *operator->() const {
+  const T *operator->() const noexcept {
     assert(is_init);
     return as_ptr();
   }
 
-  T *get() {
+  T *get() noexcept {
     return is_init ? as_ptr() : nullptr;
   }
 
-  const T *get() const {
+  const T *get() const noexcept {
     return is_init ? as_ptr() : nullptr;
   }
 
-  T const &get_value_or(T const &v) const {
+  T const &get_value_or(T const &v) const noexcept {
     return is_init ? *as_ptr() : v;
   }
 
