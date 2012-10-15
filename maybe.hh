@@ -114,6 +114,13 @@ struct maybe {
     }
   }
 
+  template<typename ...Args>
+  void emplace(Args &&...args) {
+    clear();
+    new(&memory) T(std::forward<Args>(args)...);
+    is_init = true;
+  }
+
 private:
   T *as_ptr() { return reinterpret_cast<T *>(&memory); }
   const T *as_ptr() const { return reinterpret_cast<const T *>(&memory); }
