@@ -23,7 +23,7 @@ struct maybe {
   maybe(const maybe &other) noexcept(std::is_nothrow_copy_constructible<T>::value) : is_init(false) {
     if (other.is_init) {
       new (&memory) T(*other.as_ptr());
-      is_init = other.is_init;
+      is_init = true;
     }
   }
 
