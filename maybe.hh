@@ -4,6 +4,7 @@
 #include <cassert>
 #include <new>
 #include <memory>
+#include <type_traits>
 
 template<typename T>
 struct maybe {
@@ -26,7 +27,7 @@ struct maybe {
     }
   }
 
-  maybe(maybe &&other) : is_init(false) {
+  maybe(maybe &&other) noexcept(std::is_nothrow_move_constructible<T>::value) : is_init(false) {
     if (other.is_init) {
       new (&memory) T(std::move(*other.as_ptr()));
       other.is_init = false;
