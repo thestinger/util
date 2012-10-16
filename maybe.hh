@@ -22,14 +22,14 @@ struct maybe {
 
   maybe(const maybe &other) noexcept(std::is_nothrow_copy_constructible<T>::value) : is_init(false) {
     if (other.is_init) {
-      new (&memory) T(*other.as_ptr());
+      new (&memory) T(*other);
       is_init = true;
     }
   }
 
   maybe(maybe &&other) noexcept(std::is_nothrow_move_constructible<T>::value) : is_init(false) {
     if (other.is_init) {
-      new (&memory) T(std::move(*other.as_ptr()));
+      new (&memory) T(std::move(*other));
       other.is_init = false;
       is_init = true;
     }
@@ -38,9 +38,9 @@ struct maybe {
   maybe &operator=(const maybe &other) {
     if (this != &other && other.is_init) {
       if (is_init) {
-        *as_ptr() = *other.as_ptr();
+        *as_ptr() = *other;
       } else {
-        new (&memory) T(*other.as_ptr());
+        new (&memory) T(*other);
         is_init = true;
       }
     } else {
@@ -54,9 +54,9 @@ struct maybe {
     if (other.is_init) {
       other.is_init = false;
       if (is_init) {
-        *as_ptr() = std::move(*other.as_ptr());
+        *as_ptr() = std::move(*other);
       } else {
-        new (&memory) T(std::move(*other.as_ptr()));
+        new (&memory) T(std::move(*other));
         is_init = true;
       }
     } else {
