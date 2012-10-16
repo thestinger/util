@@ -10,13 +10,9 @@ template<typename T>
 struct maybe {
   maybe() noexcept : is_init(false) {}
 
-  maybe(const T &other) noexcept(std::is_nothrow_copy_constructible<T>::value) : is_init(false) {
-    new (&memory) T(other);
-    is_init = true;
-  }
-
-  maybe(T &&other) noexcept(std::is_nothrow_move_constructible<T>::value) : is_init(false) {
-    new (&memory) T(std::move(other));
+  template<typename ...Args>
+  maybe(Args &&...args) : is_init(false) {
+    new(&memory) T(std::forward<Args>(args)...);
     is_init = true;
   }
 
