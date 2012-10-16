@@ -2,6 +2,7 @@
 #define MAYBE_HH
 
 #include <cassert>
+#include <initializer_list>
 #include <new>
 #include <memory>
 #include <type_traits>
@@ -13,6 +14,13 @@ struct maybe {
   template<typename ...Args>
   maybe(Args &&...args) : is_init(false) {
     new(&memory) T(std::forward<Args>(args)...);
+    is_init = true;
+  }
+
+  template<typename U,
+           typename = typename std::enable_if<std::is_constructible<T, std::initializer_list<U>>::value>::type>
+  maybe(std::initializer_list<U> init) : is_init(false) {
+    new(&memory) T(std::forward<std::initializer_list<U>>(init));
     is_init = true;
   }
 
