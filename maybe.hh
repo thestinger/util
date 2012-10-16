@@ -103,7 +103,7 @@ struct maybe {
     return is_init ? *as_ptr() : v;
   }
 
-  void clear() noexcept(std::is_nothrow_destructible<T>::value) {
+  void clear() {
     if (is_init) {
       as_ptr()->~T();
       is_init = false;
