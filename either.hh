@@ -42,24 +42,6 @@ struct either {
     return *this;
   }
 
-  template<typename Visitor>
-  void apply_visitor(Visitor visitor) {
-    if (is_left) {
-      visitor(left);
-    } else {
-      visitor(right);
-    }
-  }
-
-  template<typename Visitor>
-  void apply_visitor(Visitor visitor) const {
-    if (is_left) {
-      visitor(left);
-    } else {
-      visitor(right);
-    }
-  }
-
   ~either() {
     destroy();
   }
@@ -79,6 +61,25 @@ private:
   };
 
   bool is_left;
+
+public:
+  template<typename LeftF, typename RightF>
+  auto match(LeftF leftf, RightF rightf) -> decltype(leftf(left)) {
+    if (is_left) {
+      return leftf(left);
+    } else {
+      return rightf(right);
+    }
+  }
+
+  template<typename LeftF, typename RightF>
+  auto match(LeftF leftf, RightF rightf) const -> decltype(leftf(left)) {
+    if (is_left) {
+      return leftf(left);
+    } else {
+      return rightf(right);
+    }
+  }
 };
 
 #endif
