@@ -1,6 +1,8 @@
 #ifndef EITHER_HH
 #define EITHER_HH
 
+#include <new>
+
 template<typename Left, typename Right>
 struct either {
   either(const Left &other) : left(other), is_left(true) {}
