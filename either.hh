@@ -2,8 +2,13 @@
 #define EITHER_HH
 
 #include <new>
+#include <type_traits>
 
-template<typename Left, typename Right>
+template<typename Left, typename Right,
+         typename = typename std::enable_if<std::is_nothrow_move_constructible<Left>::value &&
+                                            std::is_nothrow_move_constructible<Right>::value
+                                           >::type
+        >
 struct either {
   either(const Left &other) : left(other), is_left(true) {}
   either(const Right &other) : right(other), is_left(false) {}
@@ -18,12 +23,23 @@ struct either {
     }
   }
 
-  either(either &&other) : is_left(other.is_left) {
+  either(either &&other) noexcept : is_left(other.is_left) {
     if (is_left) {
       new(&left) Left(std::move(other.left));
     } else {
       new(&right) Right(std::move(other.right));
     }
+  }
+
+  either operator=(either other) {
+    destroy();
+    is_left = other.is_left;
+    if (is_left) {
+      new(&left) Left(std::move(other.left));
+    } else {
+      new(&right) Right(std::move(other.right));
+    }
+    return *this;
   }
 
   template<typename Visitor>
@@ -45,6 +61,11 @@ struct either {
   }
 
   ~either() {
+    destroy();
+  }
+
+private:
+  void destroy() {
     if (is_left) {
       left.~Left();
     } else {
@@ -52,7 +73,6 @@ struct either {
     }
   }
 
-private:
   union {
     Left left;
     Right right;
