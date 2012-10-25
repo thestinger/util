@@ -9,7 +9,23 @@ template<typename Left, typename Right,
                                             std::is_nothrow_move_constructible<Right>::value
                                            >::type
         >
-struct either {
+class either {
+  void destroy() {
+    if (is_left) {
+      left.~Left();
+    } else {
+      right.~Right();
+    }
+  }
+
+  union {
+    Left left;
+    Right right;
+  };
+
+  bool is_left;
+
+public:
   either(const Left &other) : left(other), is_left(true) {}
   either(const Right &other) : right(other), is_left(false) {}
   either(Left &&other) : left(std::move(other)), is_left(true) {}
@@ -46,23 +62,6 @@ struct either {
     destroy();
   }
 
-private:
-  void destroy() {
-    if (is_left) {
-      left.~Left();
-    } else {
-      right.~Right();
-    }
-  }
-
-  union {
-    Left left;
-    Right right;
-  };
-
-  bool is_left;
-
-public:
   template<typename LeftF, typename RightF>
   auto match(LeftF leftf, RightF rightf) -> decltype(leftf(left)) {
     if (is_left) {
