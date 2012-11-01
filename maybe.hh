@@ -4,8 +4,8 @@
 #include <cassert>
 #include <initializer_list>
 #include <new>
-#include <memory>
 #include <type_traits>
+#include <utility>
 
 template<typename T>
 struct maybe {
@@ -41,7 +41,7 @@ struct maybe {
   maybe &operator=(const maybe &other) {
     if (this != &other && other.is_init) {
       if (is_init) {
-        *as_ptr() = *other;
+        memory = *other;
       } else {
         new (&memory) T(*other);
         is_init = true;
@@ -56,7 +56,7 @@ struct maybe {
     assert(this != &other);
     if (other.is_init) {
       if (is_init) {
-        *as_ptr() = std::move(*other);
+        memory = std::move(*other);
       } else {
         new (&memory) T(std::move(*other));
         is_init = true;
@@ -69,7 +69,7 @@ struct maybe {
 
   ~maybe() {
     if (is_init) {
-      as_ptr()->~T();
+      memory.~T();
     }
   }
 
@@ -79,39 +79,39 @@ struct maybe {
 
   T &operator*() noexcept {
     assert(is_init);
-    return *as_ptr();
+    return memory;
   }
 
   const T &operator*() const noexcept {
     assert(is_init);
-    return *as_ptr();
+    return memory;
   }
 
   T *operator->() noexcept {
     assert(is_init);
-    return as_ptr();
+    return &memory;
   }
 
   const T *operator->() const noexcept {
     assert(is_init);
-    return as_ptr();
+    return &memory;
   }
 
   T *get() noexcept {
-    return is_init ? as_ptr() : nullptr;
+    return is_init ? &memory : nullptr;
   }
 
   const T *get() const noexcept {
-    return is_init ? as_ptr() : nullptr;
+    return is_init ? &memory : nullptr;
   }
 
   T const &get_value_or(T const &v) const noexcept {
-    return is_init ? *as_ptr() : v;
+    return is_init ? memory : v;
   }
 
   void clear() {
     if (is_init) {
-      as_ptr()->~T();
+      memory.~T();
       is_init = false;
     }
   }
@@ -124,10 +124,7 @@ struct maybe {
   }
 
 private:
-  T *as_ptr() { return reinterpret_cast<T *>(&memory); }
-  const T *as_ptr() const { return reinterpret_cast<const T *>(&memory); }
-
-  typename std::aligned_storage<sizeof(T), std::alignment_of<T>::value>::type memory;
+  union { T memory; };
   bool is_init;
 };
 
