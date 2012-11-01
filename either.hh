@@ -47,7 +47,7 @@ public:
     }
   }
 
-  either operator=(either other) {
+  either &operator=(either other) {
     destroy();
     is_left = other.is_left;
     if (is_left) {
