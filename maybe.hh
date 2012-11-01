@@ -34,7 +34,6 @@ struct maybe {
   maybe(maybe &&other) noexcept(std::is_nothrow_move_constructible<T>::value) : is_init(false) {
     if (other.is_init) {
       new (&memory) T(std::move(*other));
-      other.is_init = false;
       is_init = true;
     }
   }
@@ -56,7 +55,6 @@ struct maybe {
   maybe &operator=(maybe &&other) {
     assert(this != &other);
     if (other.is_init) {
-      other.is_init = false;
       if (is_init) {
         *as_ptr() = std::move(*other);
       } else {
