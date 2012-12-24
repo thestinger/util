@@ -1,4 +1,5 @@
 #include <cassert>
+#include <unordered_map>
 
 #include "../either.hh"
 
@@ -15,6 +16,18 @@ static void test_equality() {
   assert(a != b && !(a == b));
 }
 
+static void test_hash() {
+  std::unordered_map<either<int, double>, unsigned> map;
+  map[5.5] = 10;
+  map[5.5] += 10;
+  map[5] = 15;
+  assert(map[5.5] == 20);
+  assert(map[5] == 15);
+  assert(map[6] == 0);
+  assert(map.find(5.0) == map.end());
+}
+
 int main() {
   test_equality();
+  test_hash();
 }

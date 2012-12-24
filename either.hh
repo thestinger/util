@@ -1,6 +1,7 @@
 #ifndef EITHER_HH
 #define EITHER_HH
 
+#include <functional>
 #include <new>
 #include <type_traits>
 #include <utility>
@@ -102,6 +103,23 @@ public:
     return is_left != other.is_left ||
            is_left ? left != other.left : right != other.right;
   }
+
+  friend struct std::hash<either<Left, Right>>;
 };
+
+namespace std {
+  template<typename Left, typename Right>
+  struct hash<either<Left, Right>> {
+    hash() : hash_left(), hash_right() {}
+
+    size_t operator()(const either<Left, Right> &e) const {
+      return e.is_left ? ~hash_left(e.left) : hash_right(e.right);
+    }
+
+  private:
+    const hash<Left> hash_left;
+    const hash<Right> hash_right;
+  };
+}
 
 #endif
