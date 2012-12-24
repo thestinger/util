@@ -66,20 +66,12 @@ public:
 
   template<typename LeftF, typename RightF>
   auto match(LeftF leftf, RightF rightf) -> decltype(leftf(left)) {
-    if (is_left) {
-      return leftf(left);
-    } else {
-      return rightf(right);
-    }
+    return is_left ? leftf(left) : rightf(right);
   }
 
   template<typename LeftF, typename RightF>
   auto match(LeftF leftf, RightF rightf) const -> decltype(leftf(left)) {
-    if (is_left) {
-      return leftf(left);
-    } else {
-      return rightf(right);
-    }
+    return is_left ? leftf(left) : rightf(right);
   }
 
   template<typename ...Args>
