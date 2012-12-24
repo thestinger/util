@@ -3,6 +3,7 @@
 
 #include <new>
 #include <type_traits>
+#include <utility>
 
 template<typename Left, typename Right,
          typename = typename std::enable_if<std::is_nothrow_move_constructible<Left>::value &&
@@ -90,6 +91,16 @@ public:
   void emplace_right(Args &&...args) {
     destroy();
     new(&right) Right(std::forward<Args>(args)...);
+  }
+
+  bool operator==(const either &other) const {
+    return is_left == other.is_left &&
+           is_left ? left == other.left : right == other.right;
+  }
+
+  bool operator!=(const either &other) const {
+    return is_left != other.is_left ||
+           is_left ? left != other.left : right != other.right;
   }
 };
 
