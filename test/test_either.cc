@@ -27,7 +27,15 @@ static void test_hash() {
   assert(map.find(5.0) == map.end());
 }
 
+static void test_match() {
+  either<int, double> a(5);
+  assert(a.match([](int) { return 1; }, [](double) { return 2; }) == 1);
+  a.emplace_right(5.5);
+  assert(a.match([](int) { return 1; }, [](double) { return 2; }) == 2);
+}
+
 int main() {
   test_equality();
   test_hash();
+  test_match();
 }

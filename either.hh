@@ -78,12 +78,14 @@ public:
   void emplace_left(Args &&...args) {
     destroy();
     new(&left) Left(std::forward<Args>(args)...);
+    is_left = true;
   }
 
   template<typename ...Args>
   void emplace_right(Args &&...args) {
     destroy();
     new(&right) Right(std::forward<Args>(args)...);
+    is_left = false;
   }
 
   bool operator==(const either &other) const {
