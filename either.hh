@@ -74,14 +74,16 @@ public:
     return is_left ? leftf(left) : rightf(right);
   }
 
-  template<typename ...Args>
+  template<typename ...Args,
+           typename = typename std::enable_if<std::is_nothrow_constructible<Left, Args...>::value>::type>
   void emplace_left(Args &&...args) {
     destroy();
     new(&left) Left(std::forward<Args>(args)...);
     is_left = true;
   }
 
-  template<typename ...Args>
+  template<typename ...Args,
+           typename = typename std::enable_if<std::is_nothrow_constructible<Right, Args...>::value>::type>
   void emplace_right(Args &&...args) {
     destroy();
     new(&right) Right(std::forward<Args>(args)...);
