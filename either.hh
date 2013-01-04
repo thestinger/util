@@ -6,12 +6,13 @@
 #include <type_traits>
 #include <utility>
 
-template<typename Left, typename Right,
-         typename = typename std::enable_if<std::is_nothrow_move_constructible<Left>::value &&
-                                            std::is_nothrow_move_constructible<Right>::value
-                                           >::type
-        >
+template<typename Left, typename Right>
 class either {
+  static_assert(std::is_nothrow_move_constructible<Left>::value,
+                "Left's move constructor must be noexcept");
+  static_assert(std::is_nothrow_move_constructible<Right>::value,
+                "Right's move constructor must be noexcept");
+
   void destroy() {
     if (is_left) {
       left.~Left();
@@ -74,17 +75,19 @@ public:
     return is_left ? leftf(left) : rightf(right);
   }
 
-  template<typename ...Args,
-           typename = typename std::enable_if<std::is_nothrow_constructible<Left, Args...>::value>::type>
+  template<typename ...Args>
   void emplace_left(Args &&...args) {
+    static_assert(std::is_nothrow_constructible<Left, Args...>::value,
+                  "constructor must be noexcept");
     destroy();
     new(&left) Left(std::forward<Args>(args)...);
     is_left = true;
   }
 
-  template<typename ...Args,
-           typename = typename std::enable_if<std::is_nothrow_constructible<Right, Args...>::value>::type>
+  template<typename ...Args>
   void emplace_right(Args &&...args) {
+    static_assert(std::is_nothrow_constructible<Right, Args...>::value,
+                  "constructor must be noexcept");
     destroy();
     new(&right) Right(std::forward<Args>(args)...);
     is_left = false;
