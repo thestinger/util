@@ -9,7 +9,7 @@
 
 template<typename T>
 struct maybe {
-  maybe() noexcept : is_init(false) {}
+  constexpr maybe() noexcept : is_init(false) {}
 
   template<typename ...Args>
   maybe(Args &&...args) : is_init(false) {
