@@ -45,6 +45,8 @@ static void assert_empty(const maybe<std::string> &m) {
   assert(!m);
   assert(!m.get());
   assert(m.get_value_or("foo") == "foo");
+  assert(m.empty());
+  assert(!m.size());
 }
 
 static void assert_equal(const maybe<std::string> &m,
@@ -82,6 +84,7 @@ static void test_string() {
 }
 
 int main() {
+  assert(maybe<int>().max_size() == 1);
   test_equality();
   test_hash();
   test_iterator();

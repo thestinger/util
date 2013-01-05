@@ -116,7 +116,7 @@ struct maybe {
   }
 
   explicit operator bool() const noexcept { return is_init; }
-  bool empty() const noexcept { return is_init; }
+  bool empty() const noexcept { return !is_init; }
   size_type size() const noexcept { return is_init; }
   constexpr size_type max_size() const noexcept { return 1; }
 
