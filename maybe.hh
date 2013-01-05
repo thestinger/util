@@ -187,7 +187,6 @@ struct maybe {
 private:
   union { T memory; };
   bool is_init;
-  friend struct std::hash<maybe<T>>;
 };
 
 namespace std {
@@ -196,7 +195,7 @@ namespace std {
     hash() : hash_init() {}
 
     size_t operator()(const maybe<T> &m) const {
-      return m.is_init ? hash_init(m.memory) : SIZE_MAX / 13;
+      return m.empty() ? SIZE_MAX / 13 : hash_init(*m);
     }
 
   private:
