@@ -167,11 +167,11 @@ struct maybe {
     }
   }
 
-  bool operator==(const maybe &other) const {
+  bool operator==(const maybe &other) const noexcept {
     return is_init ? other.is_init && memory == other.memory : !other.is_init;
   }
 
-  bool operator!=(const maybe &other) const {
+  bool operator!=(const maybe &other) const noexcept {
     return is_init ? !other.is_init || memory != other.memory : other.is_init;
   }
 

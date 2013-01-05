@@ -93,12 +93,12 @@ public:
     is_left = false;
   }
 
-  bool operator==(const either &other) const {
+  bool operator==(const either &other) const noexcept {
     return is_left == other.is_left &&
            is_left ? left == other.left : right == other.right;
   }
 
-  bool operator!=(const either &other) const {
+  bool operator!=(const either &other) const noexcept {
     return is_left != other.is_left ||
            is_left ? left != other.left : right != other.right;
   }
