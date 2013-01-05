@@ -47,6 +47,7 @@ struct maybe {
   typedef T value_type;
   typedef maybe_iterator<T *> iterator;
   typedef maybe_iterator<const T *> const_iterator;
+  typedef bool size_type;
 
   constexpr maybe() noexcept : is_init(false) {}
 
@@ -112,9 +113,10 @@ struct maybe {
     }
   }
 
-  explicit operator bool() const noexcept {
-    return is_init;
-  }
+  explicit operator bool() const noexcept { return is_init; }
+  bool empty() const noexcept { return is_init; }
+  size_type size() const noexcept { return is_init; }
+  constexpr size_type max_size() const noexcept { return 1; }
 
   T &operator*() noexcept {
     assert(is_init);
