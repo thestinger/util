@@ -1,5 +1,6 @@
 #include <cassert>
 #include <string>
+#include <unordered_map>
 
 #include "../maybe.hh"
 
@@ -9,6 +10,19 @@ static void test_equality() {
   assert(maybe<int>(6) != maybe<int>(4));
   assert(maybe<int>() != maybe<int>(4));
   assert(maybe<int>(9) != maybe<int>());
+}
+
+static void test_hash() {
+  std::unordered_map<maybe<int>, int> map;
+  map[10] = 6;
+  map[5] = -19;
+  map[maybe<int>()] = 7;
+  map[10] += 4;
+  assert(map[10] == 10);
+  assert(map[maybe<int>()] == 7);
+  assert(map[5] == -19);
+  assert(map[6] == 0);
+  assert(map.find(11) == map.end());
 }
 
 static void test_iterator() {
@@ -69,6 +83,7 @@ static void test_string() {
 
 int main() {
   test_equality();
+  test_hash();
   test_iterator();
   test_string();
 }
