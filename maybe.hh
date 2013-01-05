@@ -7,12 +7,12 @@
 #include <type_traits>
 #include <utility>
 
+template<typename T> struct maybe;
+
 template<typename T>
 struct maybe_iterator {
   typedef typename std::remove_pointer<T>::type value_type;
   typedef T pointer;
-
-  constexpr maybe_iterator(T p) noexcept : ptr(p) {}
 
   typename std::enable_if<!std::is_const<value_type>::value, value_type>::type
   &operator*() noexcept { return *ptr; }
@@ -39,7 +39,9 @@ struct maybe_iterator {
   }
 
 private:
+  constexpr maybe_iterator(T p) noexcept : ptr(p) {}
   T ptr;
+  friend maybe<value_type>;
 };
 
 template<typename T>
