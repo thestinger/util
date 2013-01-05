@@ -8,7 +8,46 @@
 #include <utility>
 
 template<typename T>
+struct maybe_iterator {
+  typedef typename std::remove_pointer<T>::type value_type;
+  typedef T pointer;
+
+  constexpr maybe_iterator(T p) noexcept : ptr(p) {}
+
+  typename std::enable_if<!std::is_const<value_type>::value, value_type>::type
+  &operator*() noexcept { return *ptr; }
+
+  const value_type &operator*() const noexcept { return *ptr; }
+
+  bool operator==(const maybe_iterator &other) noexcept {
+    return ptr == other.ptr;
+  }
+
+  bool operator!=(const maybe_iterator &other) noexcept {
+    return ptr != other.ptr;
+  }
+
+  maybe_iterator &operator++() noexcept {
+    ptr = nullptr;
+    return *this;
+  }
+
+  maybe_iterator operator++(int) noexcept {
+    T temp = ptr;
+    ptr = nullptr;
+    return temp;
+  }
+
+private:
+  T ptr;
+};
+
+template<typename T>
 struct maybe {
+  typedef T value_type;
+  typedef maybe_iterator<T *> iterator;
+  typedef maybe_iterator<const T *> const_iterator;
+
   constexpr maybe() noexcept : is_init(false) {}
 
   template<typename ...Args>
@@ -108,6 +147,14 @@ struct maybe {
   T const &get_value_or(T const &v) const noexcept {
     return is_init ? memory : v;
   }
+
+  iterator begin() noexcept { return is_init ? &memory : nullptr; }
+  const_iterator begin() const noexcept { return is_init ? &memory : nullptr; }
+  const_iterator cbegin() const noexcept { return is_init ? &memory : nullptr; }
+
+  iterator end() noexcept { return nullptr; }
+  const_iterator end() const noexcept { return nullptr; }
+  const_iterator cend() const noexcept { return nullptr; }
 
   void clear() {
     if (is_init) {

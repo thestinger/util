@@ -21,7 +21,21 @@ static void assert_equal(const maybe<std::string> &m,
   assert(m.get_value_or(non_equal) == equal);
 }
 
-int main() {
+static void test_iterator() {
+  maybe<int> a;
+  assert(a.begin() == a.end());
+  for (int i : a) { (void)i; assert(false); }
+
+  a = 5;
+
+  assert(a.begin() != a.end());
+  assert(*a.begin() == 5);
+  for (int i : a) {
+    assert(i == 5);
+  }
+}
+
+static void test_string() {
   maybe<std::string> a;
   assert_empty(a);
   a.clear();
@@ -43,4 +57,9 @@ int main() {
 
   a = b;
   assert_equal(a, "baz");
+}
+
+int main() {
+  test_iterator();
+  test_string();
 }
