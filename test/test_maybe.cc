@@ -3,6 +3,28 @@
 
 #include "../maybe.hh"
 
+static void test_equality() {
+  assert(maybe<int>(5) == maybe<int>(5));
+  assert(maybe<int>() == maybe<int>());
+  assert(maybe<int>(6) != maybe<int>(4));
+  assert(maybe<int>() != maybe<int>(4));
+  assert(maybe<int>(9) != maybe<int>());
+}
+
+static void test_iterator() {
+  maybe<int> a;
+  assert(a.begin() == a.end());
+  for (int i : a) { (void)i; assert(false); }
+
+  a = 5;
+
+  assert(a.begin() != a.end());
+  assert(*a.begin() == 5);
+  for (int i : a) {
+    assert(i == 5);
+  }
+}
+
 const char *const non_equal = "foo";
 
 static void assert_empty(const maybe<std::string> &m) {
@@ -19,20 +41,6 @@ static void assert_equal(const maybe<std::string> &m,
   assert(*m == equal);
   assert(*m != non_equal);
   assert(m.get_value_or(non_equal) == equal);
-}
-
-static void test_iterator() {
-  maybe<int> a;
-  assert(a.begin() == a.end());
-  for (int i : a) { (void)i; assert(false); }
-
-  a = 5;
-
-  assert(a.begin() != a.end());
-  assert(*a.begin() == 5);
-  for (int i : a) {
-    assert(i == 5);
-  }
 }
 
 static void test_string() {
@@ -60,6 +68,7 @@ static void test_string() {
 }
 
 int main() {
+  test_equality();
   test_iterator();
   test_string();
 }

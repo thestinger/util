@@ -167,6 +167,14 @@ struct maybe {
     }
   }
 
+  bool operator==(const maybe &other) const {
+    return is_init ? other.is_init && memory == other.memory : !other.is_init;
+  }
+
+  bool operator!=(const maybe &other) const {
+    return is_init ? !other.is_init || memory != other.memory : other.is_init;
+  }
+
   // Destroy contained value and then construct in-place.
   // If the constructor throws, this has the same effect as calling clear.
   template<typename ...Args>
