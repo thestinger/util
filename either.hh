@@ -102,8 +102,6 @@ public:
     return is_left != other.is_left ||
            is_left ? left != other.left : right != other.right;
   }
-
-  friend struct std::hash<either<Left, Right>>;
 };
 
 namespace std {
@@ -112,7 +110,8 @@ namespace std {
     hash() : hash_left(), hash_right() {}
 
     size_t operator()(const either<Left, Right> &e) const {
-      return e.is_left ? ~hash_left(e.left) : hash_right(e.right);
+      return e.match([this](const Left &v) { return ~hash_left(v); },
+                     [this](const Right &v) { return hash_right(v); });
     }
 
   private:
