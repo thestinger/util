@@ -116,6 +116,8 @@ struct maybe {
     }
   }
 
+  // Destroy contained value and then construct in-place.
+  // If the constructor throws, this has the same effect as calling clear.
   template<typename ...Args>
   void emplace(Args &&...args) {
     clear();
